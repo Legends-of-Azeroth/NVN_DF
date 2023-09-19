@@ -2246,8 +2246,8 @@ void World::DetectDBCLang()
 
     std::string availableLocalsStr;
 
-    uint8 default_locale = TOTAL_LOCALES;
-    for (uint8 i = default_locale-1; i < TOTAL_LOCALES; --i)  // -1 will be 255 due to uint8
+    uint8 default_locale = LOCALE_enUS;
+    for (uint8 i = LOCALE_enUS; i < TOTAL_LOCALES; ++i)
     {
         if (race->Name[i][0] != '\0')                     // check by race names
         {
@@ -2258,16 +2258,16 @@ void World::DetectDBCLang()
         }
     }
 
+    if (m_availableDbcLocaleMask == 0)
+    {
+        TC_LOG_ERROR("server.loading", "Unable to determine your DBC Locale! (corrupt DBC?)");
+        exit(1);
+    }
+
     if (default_locale != m_lang_confid && m_lang_confid < TOTAL_LOCALES &&
         (m_availableDbcLocaleMask & (1 << m_lang_confid)))
     {
         default_locale = m_lang_confid;
-    }
-
-    if (default_locale >= TOTAL_LOCALES)
-    {
-        TC_LOG_ERROR("server.loading", "Unable to determine your DBC Locale! (corrupt DBC?)");
-        exit(1);
     }
 
     m_defaultDbcLocale = LocaleConstant(default_locale);
